@@ -1,0 +1,140 @@
+<div class="min-h-screen bg-gray-50">
+
+  <!-- Topbar -->
+  <header class="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <div class="max-w-3xl mx-auto px-5 flex items-center justify-between" style="height:52px">
+      <div class="flex items-center gap-3">
+        <a routerLink="/document-types" class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          Documents
+        </a>
+        <span class="text-gray-300">/</span>
+        <span class="text-sm text-gray-700 font-medium">New Request</span>
+      </div>
+      <button (click)="authService.logout()" class="px-3 py-1.5 rounded-lg text-sm text-red-600 hover:bg-red-50 transition">Logout</button>
+    </div>
+  </header>
+
+  <div class="max-w-3xl mx-auto px-5 py-7">
+    <h2 class="text-lg font-medium text-gray-900 mb-5">New Document Request</h2>
+
+    <div *ngIf="errorMessage"
+      class="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 mb-5 text-sm">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      {{ errorMessage }}
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+      <!-- Form -->
+      <div class="md:col-span-2 bg-white border border-gray-200 rounded-xl p-5">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
+
+          <!-- Document Type -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">
+              Document type <span class="text-red-500">*</span>
+            </label>
+            <select formControlName="documentTypeId" (change)="onTypeChange()"
+              class="w-full border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition appearance-none bg-white">
+              <option value="">— Select a document type —</option>
+              <option *ngFor="let t of documentTypes" [value]="t.id">{{ t.name }}</option>
+            </select>
+            <p *ngIf="form.get('documentTypeId')?.touched && form.get('documentTypeId')?.invalid"
+              class="text-red-500 text-xs mt-1">Please select a document type.</p>
+          </div>
+
+          <!-- Purpose -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">
+              Purpose <span class="text-red-500">*</span>
+            </label>
+            <textarea formControlName="purpose" rows="3"
+              placeholder="e.g. For scholarship application at CHED"
+              class="w-full border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition"></textarea>
+            <p *ngIf="form.get('purpose')?.touched && form.get('purpose')?.invalid"
+              class="text-red-500 text-xs mt-1">Purpose is required (min 10 characters).</p>
+          </div>
+
+          <!-- Quantity -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">
+              Number of copies <span class="text-red-500">*</span>
+            </label>
+            <input formControlName="quantity" type="number" min="1" max="10"
+              class="w-full border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" />
+          </div>
+
+          <!-- File upload -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">
+              Supporting document
+              <span class="text-gray-400 font-normal">(optional)</span>
+            </label>
+            <label for="file-upload"
+              class="flex flex-col items-center justify-center border border-dashed border-gray-300 rounded-lg p-5 cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition text-center">
+              <svg class="text-gray-400 mb-2" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+              <span class="text-sm text-gray-500">Click to upload or drag and drop</span>
+              <span class="text-xs text-gray-400 mt-1">PDF, JPG, PNG — max 5 MB</span>
+            </label>
+            <input id="file-upload" type="file" (change)="onFileSelected($event)" accept=".pdf,.jpg,.jpeg,.png" class="hidden" />
+            <p *ngIf="selectedFile" class="flex items-center gap-1.5 text-xs text-green-600 mt-2">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              {{ selectedFile.name }}
+            </p>
+          </div>
+
+          <button type="submit" [disabled]="isLoading"
+            class="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-2.5 rounded-lg text-sm transition">
+            {{ isLoading ? 'Submitting...' : 'Submit Request' }}
+          </button>
+        </form>
+      </div>
+
+      <!-- Summary -->
+      <div class="md:col-span-1">
+        <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 sticky top-20">
+          <p class="text-xs font-medium text-gray-500 mb-3 uppercase tracking-wide">Request summary</p>
+
+          <ng-container *ngIf="selectedType; else noType">
+            <p class="text-sm font-medium text-blue-700 mb-3">{{ selectedType.name }}</p>
+
+            <div class="space-y-2 text-sm">
+              <div class="flex justify-between text-gray-500">
+                <span>Fee per copy</span>
+                <span class="text-gray-800 font-medium">₱{{ selectedType.fee }}</span>
+              </div>
+              <div class="flex justify-between text-gray-500">
+                <span>Copies</span>
+                <span class="text-gray-800 font-medium">{{ form.get('quantity')?.value || 1 }}</span>
+              </div>
+              <div class="flex justify-between pt-2 border-t border-gray-200 font-medium text-gray-900">
+                <span>Total</span>
+                <span class="text-blue-700">₱{{ selectedType.fee * (form.get('quantity')?.value || 1) }}</span>
+              </div>
+              <div class="flex items-center gap-1.5 pt-1 text-xs text-gray-400">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Est. {{ selectedType.processingDays }} day{{ selectedType.processingDays > 1 ? 's' : '' }} processing
+              </div>
+            </div>
+
+            <div *ngIf="selectedType.requirements?.length" class="mt-4 pt-3 border-t border-gray-200">
+              <p class="text-xs font-medium text-gray-600 mb-2">Requirements</p>
+              <ul class="space-y-1">
+                <li *ngFor="let req of selectedType.requirements"
+                  class="flex items-start gap-1.5 text-xs text-gray-500">
+                  <span class="mt-1.5 w-1 h-1 rounded-full bg-gray-400 flex-shrink-0"></span>
+                  {{ req }}
+                </li>
+              </ul>
+            </div>
+          </ng-container>
+
+          <ng-template #noType>
+            <p class="text-xs text-gray-400">Select a document type to see details.</p>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "@angular/cdk": "^21.2.9",
+    "@auth0/angular-jwt": "^5.2.0",
+    "ngx-toastr": "^20.0.5"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.13",
+    "tailwindcss": "^4.2.4"
+  }
+}

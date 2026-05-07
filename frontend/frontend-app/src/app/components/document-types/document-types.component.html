@@ -1,0 +1,64 @@
+<div class="min-h-screen bg-gray-50">
+
+  <!-- Topbar -->
+  <header class="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <div class="max-w-6xl mx-auto px-5 flex items-center justify-between" style="height:52px">
+      <div class="flex items-center gap-2">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        <span class="text-sm font-medium text-gray-800">DocRequest</span>
+      </div>
+      <div class="flex items-center gap-1">
+        <a routerLink="/dashboard" class="px-3 py-1.5 rounded-lg text-sm text-gray-600 hover:bg-gray-100 transition">Dashboard</a>
+        <a routerLink="/document-types" class="px-3 py-1.5 rounded-lg text-sm text-gray-600 hover:bg-gray-100 font-medium transition">Documents</a>
+        <a routerLink="/requests" class="px-3 py-1.5 rounded-lg text-sm text-gray-600 hover:bg-gray-100 transition">My Requests</a>
+        <div class="w-px h-4 bg-gray-200 mx-1"></div>
+        <button (click)="authService.logout()" class="px-3 py-1.5 rounded-lg text-sm text-red-600 hover:bg-red-50 transition">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-6xl mx-auto px-5 py-7">
+    <div class="mb-5">
+      <h2 class="text-lg font-medium text-gray-900">Available Documents</h2>
+      <p class="text-sm text-gray-500 mt-1">Select a document type to submit a request.</p>
+    </div>
+
+    <div *ngIf="isLoading" class="text-center py-12 text-sm text-gray-400">Loading...</div>
+    <div *ngIf="errorMessage" class="text-red-500 text-center py-8 text-sm">{{ errorMessage }}</div>
+
+    <div *ngIf="!isLoading" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div *ngFor="let type of types"
+        class="bg-white border border-gray-200 rounded-xl p-5 hover:border-gray-300 hover:shadow-sm transition">
+
+        <div class="flex justify-between items-start mb-2">
+          <h3 class="text-sm font-medium text-gray-900">{{ type.name }}</h3>
+          <span class="bg-blue-50 text-blue-700 text-xs font-medium px-2.5 py-1 rounded-full">₱{{ type.fee }}</span>
+        </div>
+
+        <p class="text-xs text-gray-500 mb-3 leading-relaxed">{{ type.description }}</p>
+
+        <div class="flex items-center gap-1.5 text-xs text-gray-400 mb-3">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          {{ type.processingDays }} day{{ type.processingDays > 1 ? 's' : '' }} processing
+        </div>
+
+        <div *ngIf="type.requirements?.length" class="mb-4">
+          <p class="text-xs font-medium text-gray-600 mb-1.5">Requirements</p>
+          <ul class="space-y-1">
+            <li *ngFor="let req of type.requirements" class="flex items-start gap-1.5 text-xs text-gray-500">
+              <span class="mt-1.5 w-1 h-1 rounded-full bg-gray-400 flex-shrink-0"></span>
+              {{ req }}
+            </li>
+          </ul>
+        </div>
+
+        <button (click)="requestDocument(type.id)"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium py-2.5 rounded-lg transition">
+          Request this document
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

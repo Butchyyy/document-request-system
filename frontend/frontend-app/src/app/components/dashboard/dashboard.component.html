@@ -1,0 +1,143 @@
+<div class="min-h-screen bg-gray-50">
+
+  <!-- Topbar -->
+  <header class="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <div class="max-w-6xl mx-auto px-5 h-13 flex items-center justify-between" style="height:52px">
+      <div class="flex items-center gap-2">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        <span class="text-sm font-medium text-gray-800">DocRequest</span>
+      </div>
+      <div class="flex items-center gap-1">
+        <a routerLink="/dashboard"
+          class="px-3 py-1.5 rounded-lg text-sm text-gray-600 hover:bg-gray-100 transition font-medium">Dashboard</a>
+        <a routerLink="/document-types"
+          class="px-3 py-1.5 rounded-lg text-sm text-gray-600 hover:bg-gray-100 transition">Documents</a>
+        <a *ngIf="!authService.isAdmin()" routerLink="/requests"
+          class="px-3 py-1.5 rounded-lg text-sm text-gray-600 hover:bg-gray-100 transition">My Requests</a>
+        <a *ngIf="authService.isAdmin()" routerLink="/admin/requests"
+          class="px-3 py-1.5 rounded-lg text-sm text-gray-600 hover:bg-gray-100 transition">Admin Panel</a>
+        <div class="w-px h-4 bg-gray-200 mx-1"></div>
+        <span class="text-xs px-2 py-1 rounded-full font-medium"
+          [class]="authService.isAdmin() ? 'bg-purple-50 text-purple-700' : 'bg-blue-50 text-blue-700'">
+          {{ authService.isAdmin() ? 'Administrator' : 'User' }}
+        </span>
+        <button (click)="authService.logout()"
+          class="ml-1 px-3 py-1.5 rounded-lg text-sm text-red-600 hover:bg-red-50 transition">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-6xl mx-auto px-5 py-7">
+
+    <!-- Hero -->
+    <div class="rounded-xl p-6 mb-6 text-white" style="background: linear-gradient(135deg, #185FA5 0%, #0C447C 100%)">
+      <h2 class="text-lg font-medium mb-1">Welcome back, {{ authService.currentUserValue?.name }}!</h2>
+      <p class="text-blue-200 text-sm mb-4">
+        {{ authService.isAdmin()
+          ? 'Manage all document requests from the admin panel.'
+          : 'Browse document types and track your requests below.' }}
+      </p>
+      <div class="flex gap-2 flex-wrap">
+        <ng-container *ngIf="!authService.isAdmin()">
+          <a routerLink="/document-types"
+            class="bg-white text-blue-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 transition">
+            Browse Documents
+          </a>
+          <a routerLink="/requests"
+            class="border border-white/40 bg-white/10 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-white/20 transition">
+            My Requests
+          </a>
+        </ng-container>
+        <ng-container *ngIf="authService.isAdmin()">
+          <a routerLink="/admin/requests"
+            class="bg-white text-blue-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 transition">
+            Manage All Requests
+          </a>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+      <div class="bg-white border border-gray-200 rounded-lg p-4" style="border-left: 3px solid #378ADD">
+        <p class="text-xs text-gray-500 mb-1">Total</p>
+        <p class="text-2xl font-medium text-gray-900">{{ stats.total }}</p>
+      </div>
+      <div class="bg-white border border-gray-200 rounded-lg p-4" style="border-left: 3px solid #EF9F27">
+        <p class="text-xs text-gray-500 mb-1">Pending</p>
+        <p class="text-2xl font-medium text-yellow-700">{{ stats.pending }}</p>
+      </div>
+      <div class="bg-white border border-gray-200 rounded-lg p-4" style="border-left: 3px solid #639922">
+        <p class="text-xs text-gray-500 mb-1">Approved</p>
+        <p class="text-2xl font-medium text-green-700">{{ stats.approved }}</p>
+      </div>
+      <div class="bg-white border border-gray-200 rounded-lg p-4" style="border-left: 3px solid #7F77DD">
+        <p class="text-xs text-gray-500 mb-1">Completed</p>
+        <p class="text-2xl font-medium text-purple-700">{{ stats.completed }}</p>
+      </div>
+      <div class="bg-white border border-gray-200 rounded-lg p-4" style="border-left: 3px solid #E24B4A">
+        <p class="text-xs text-gray-500 mb-1">Rejected</p>
+        <p class="text-2xl font-medium text-red-700">{{ stats.rejected }}</p>
+      </div>
+    </div>
+
+    <!-- Recent Requests -->
+    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+      <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center">
+        <h3 class="text-sm font-medium text-gray-800">
+          {{ authService.isAdmin() ? 'Recent Requests — All Users' : 'My Recent Requests' }}
+        </h3>
+        <a *ngIf="!authService.isAdmin()" routerLink="/requests" class="text-sm text-blue-600 hover:underline">View all →</a>
+        <a *ngIf="authService.isAdmin()" routerLink="/admin/requests" class="text-sm text-blue-600 hover:underline">Manage all →</a>
+      </div>
+
+      <div *ngIf="isLoading" class="p-10 text-center text-sm text-gray-400">Loading...</div>
+
+      <div *ngIf="!isLoading && recentRequests.length === 0" class="p-12 text-center">
+        <svg class="mx-auto mb-3 text-gray-300" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <p class="text-sm text-gray-500 mb-2">No requests yet.</p>
+        <a *ngIf="!authService.isAdmin()" routerLink="/document-types"
+          class="text-sm text-blue-600 hover:underline">Browse document types →</a>
+      </div>
+
+      <div *ngIf="!isLoading && recentRequests.length > 0" class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-50">
+            <tr>
+              <th *ngIf="authService.isAdmin()" class="px-5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">Requester</th>
+              <th class="px-5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">Document type</th>
+              <th class="px-5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">Purpose</th>
+              <th class="px-5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">Status</th>
+              <th class="px-5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">Date</th>
+              <th class="px-5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">Action</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <tr *ngFor="let r of recentRequests" class="hover:bg-gray-50 transition">
+              <td *ngIf="authService.isAdmin()" class="px-5 py-3.5">
+                <p class="font-medium text-gray-800 text-sm">{{ r.userName }}</p>
+                <p class="text-gray-400 text-xs mt-0.5">{{ r.userEmail }}</p>
+              </td>
+              <td class="px-5 py-3.5 font-medium text-gray-800">{{ r.documentTypeName }}</td>
+              <td class="px-5 py-3.5 text-gray-500 text-xs">{{ r.purpose | slice:0:40 }}{{ r.purpose.length > 40 ? '...' : '' }}</td>
+              <td class="px-5 py-3.5">
+                <span [class]="getStatusClass(r.status) + ' inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium'">
+                  {{ getStatusIcon(r.status) }} {{ r.status | titlecase }}
+                </span>
+              </td>
+              <td class="px-5 py-3.5 text-gray-400 text-xs">{{ r.requestDate | date:'mediumDate' }}</td>
+              <td class="px-5 py-3.5">
+                <a *ngIf="!authService.isAdmin()" [routerLink]="['/requests', r.id]"
+                  class="text-blue-600 hover:underline text-sm">View</a>
+                <a *ngIf="authService.isAdmin()" routerLink="/admin/requests"
+                  class="text-purple-600 hover:underline text-sm">Manage</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
