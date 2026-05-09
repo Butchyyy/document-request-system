@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # Document Request System
 
 A full-stack document request system with role-based access control (RBAC), built with:
@@ -127,6 +127,6 @@ frontend/         # Angular frontend app
 ## License
 
 This project is provided as-is for development and testing.
-=======
+
 # Document_Request_System
->>>>>>> afd5c558c8dd74440888da0f2f1df1cc3e3c903a
+ afd5c558c8dd74440888da0f2f1df1cc3e3c903a
