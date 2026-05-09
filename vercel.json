@@ -1,7 +1,6 @@
 {
-  "root": "frontend/frontend-app",
   "buildCommand": "npm install && npm run build",
-  "outputDirectory": "dist/document-request-frontend/browser",
+  "outputDirectory": "dist/document-request-frontend",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
