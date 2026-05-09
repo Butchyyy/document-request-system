@@ -1,6 +1,6 @@
 {
   "buildCommand": "npx ng build",
-  "outputDirectory": "dist/frontend-app/browser",
+  "outputDirectory": "dist/document-request-frontend",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
