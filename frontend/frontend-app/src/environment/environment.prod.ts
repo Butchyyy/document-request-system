@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://YOUR-DEPLOYED-BACKEND-URL/api'
+  apiUrl: 'https://document-request-system-56lj.onrender.com/api'
 };
