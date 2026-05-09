@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd frontend/frontend-app && npm install && npm run build",
+  "buildCommand": "npm --prefix frontend/frontend-app install && npm --prefix frontend/frontend-app run build",
   "outputDirectory": "frontend/frontend-app/dist/document-request-frontend/browser",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
