@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npx ng build",
+  "buildCommand": "npm install -g @angular/cli && ng build",
   "outputDirectory": "dist/document-request-frontend",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
