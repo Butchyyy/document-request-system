@@ -32,6 +32,8 @@ app.use(cors({
     if (!origin) return callback(null, true);
     // Allow any localhost port in development
     if (/^http:\/\/localhost:\d+$/.test(origin)) return callback(null, true);
+    // Allow Netlify frontend
+    if (origin === 'https://document-request-system.netlify.app') return callback(null, true);
     // Block everything else
     callback(new Error(`CORS blocked: ${origin}`));
   },
