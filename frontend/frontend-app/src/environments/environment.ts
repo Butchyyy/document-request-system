@@ -9,5 +9,5 @@ export const environment = {
     appId: '1:343905608788:web:fef2940ad27a19248ef9c1',
     measurementId: 'G-PL6BGNM3MT'
   },
-  apiUrl: 'http://localhost:5000/api'
+  apiUrl: 'https://document-request-system-3w9u.onrender.com/api'
 };
