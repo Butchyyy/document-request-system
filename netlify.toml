@@ -1,0 +1,9 @@
+[build]
+  base = "frontend/frontend-app"
+  command = "npx ng build --configuration production"
+  publish = "dist/document-request-frontend/browser"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
